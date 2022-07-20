@@ -24,11 +24,6 @@ WORKDIR /usr/src/app
 # Copy Anything The Application Needs
 COPY --from=go-builder /tmp/app ./
 
-
-# Remove the command below if the service doesn't need JWT Signer / Parser
-# Check the Makefile
-COPY --from=go-builder /tmp/secret secret
-
 # Expose Application Port
 EXPOSE 9000
 

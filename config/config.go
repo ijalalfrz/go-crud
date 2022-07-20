@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/joho/godotenv/autoload" // for development
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
