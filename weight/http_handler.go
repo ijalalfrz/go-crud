@@ -19,16 +19,18 @@ const (
 
 // HTTPHandler is a concrete struct of weight http handler.
 type HTTPHandler struct {
-	Logger   *logrus.Logger
-	Validate *validator.Validate
-	Usecase  Usecase
+	Logger       *logrus.Logger
+	Validate     *validator.Validate
+	Usecase      Usecase
+	TemplatePath string
 }
 
 func NewWeightHTTPHandler(logger *logrus.Logger, validate *validator.Validate, router *mux.Router, usecase Usecase) {
 	handler := &HTTPHandler{
-		Logger:   logger,
-		Validate: validate,
-		Usecase:  usecase,
+		Logger:       logger,
+		Validate:     validate,
+		Usecase:      usecase,
+		TemplatePath: "./weight/template/",
 	}
 	router.HandleFunc(basePath+"/add", handler.GetWeightForm).Methods(http.MethodGet)
 	router.HandleFunc(basePath+"/{date}/update", handler.GetUpdateWeightForm).Methods(http.MethodGet)
@@ -46,7 +48,7 @@ func (handler HTTPHandler) GetWeightForm(w http.ResponseWriter, r *http.Request)
 	data := map[string]interface{}{
 		"Error": r.Header.Get("error"),
 	}
-	tmpl := template.Must(template.ParseFiles("./weight/template/add.html"))
+	tmpl := template.Must(template.ParseFiles(fmt.Sprintf("%s%s", handler.TemplatePath, "add.html")))
 
 	tmpl.Execute(w, data)
 	return
@@ -73,7 +75,8 @@ func (handler HTTPHandler) GetUpdateWeightForm(w http.ResponseWriter, r *http.Re
 		"Data":  resp.Data(),
 	}
 
-	tmpl := template.Must(template.ParseFiles("./weight/template/update.html"))
+	tmpl := template.Must(template.ParseFiles(fmt.Sprintf("%s%s", handler.TemplatePath, "update.html")))
+
 	tmpl.Execute(w, data)
 	return
 
@@ -82,7 +85,8 @@ func (handler HTTPHandler) GetUpdateWeightForm(w http.ResponseWriter, r *http.Re
 func (handler HTTPHandler) Index(w http.ResponseWriter, r *http.Request) {
 	resp := handler.Usecase.FindMany(r.Context())
 
-	tmpl := template.Must(template.ParseFiles("./weight/template/index.html"))
+	tmpl := template.Must(template.ParseFiles(fmt.Sprintf("%s%s", handler.TemplatePath, "index.html")))
+
 	tmpl.Execute(w, resp.Data())
 	return
 
@@ -98,7 +102,8 @@ func (handler HTTPHandler) Detail(w http.ResponseWriter, r *http.Request) {
 
 	resp := handler.Usecase.FindOne(r.Context(), date)
 
-	tmpl := template.Must(template.ParseFiles("./weight/template/detail.html"))
+	tmpl := template.Must(template.ParseFiles(fmt.Sprintf("%s%s", handler.TemplatePath, "detail.html")))
+
 	tmpl.Execute(w, resp.Data())
 	return
 
