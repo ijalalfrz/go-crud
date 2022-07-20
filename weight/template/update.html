@@ -1,0 +1,15 @@
+
+<h1>Weight</h1>
+
+{{if .Error}}
+    <h4 style="color: red;">{{.Error}}</h4>
+{{end}}
+<form method="POST" action="/weight/{{.Data.Date}}">
+    <label>Min:</label><br />
+    <input type="number" name="min" value="{{.Data.Min}}" required><br />
+    <label>Max:</label><br />
+    <input type="number" name="max" value="{{.Data.Max}}" required><br />
+    <br />
+    <button type="submit">Ubah</button>
+    <a href="/weight">Kembali</a>
+</form>
