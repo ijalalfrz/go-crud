@@ -26,6 +26,8 @@ func TestInsertOne_Success(t *testing.T) {
 
 	err := repo.InsertOne(context.TODO(), entity.Weight{})
 	assert.NoError(t, err, "should be no error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestInsertOne_Error_Unexpected(t *testing.T) {
@@ -40,6 +42,8 @@ func TestInsertOne_Error_Unexpected(t *testing.T) {
 	err := repo.InsertOne(context.TODO(), entity.Weight{})
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, err, exception.ErrInternalServer, "should be error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 
 }
 
@@ -57,6 +61,8 @@ func TestUpdateOne_Success(t *testing.T) {
 
 	err := repo.UpdateOne(context.TODO(), 1, entity.Weight{})
 	assert.NoError(t, err, "should be no error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestUpdateOne_Error_Unexpected(t *testing.T) {
@@ -72,6 +78,8 @@ func TestUpdateOne_Error_Unexpected(t *testing.T) {
 	err := repo.UpdateOne(context.TODO(), 1, entity.Weight{})
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, err, exception.ErrInternalServer, "should be error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestUpdateOne_Error_NotFound(t *testing.T) {
@@ -90,6 +98,8 @@ func TestUpdateOne_Error_NotFound(t *testing.T) {
 	err := repo.UpdateOne(context.TODO(), 1, entity.Weight{})
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, err, exception.ErrNotFound, "should be not found error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 func TestFindMany_Success(t *testing.T) {
 	cursorMock := new(mocks.Cursor)
@@ -110,6 +120,9 @@ func TestFindMany_Success(t *testing.T) {
 	result, err := repo.FindMany(context.TODO(), "date", -1)
 	assert.NoError(t, err, "should be no error")
 	assert.Equal(t, result[0].Date, int64(1656633600000000000), "should be the same")
+	cursorMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindMany_Error_Unexpected_When_Decode(t *testing.T) {
@@ -118,7 +131,6 @@ func TestFindMany_Error_Unexpected_When_Decode(t *testing.T) {
 	col := new(mocks.Collection)
 	db := new(mocks.Database)
 	cursorMock.On("Next", mock.Anything).Return(true).Once()
-	cursorMock.On("Next", mock.Anything).Return(false).Once()
 	cursorMock.On("Decode", mock.AnythingOfType("*entity.Weight")).Return(mongo.ErrNoDocuments)
 	col.On("Find", mock.Anything, mock.Anything, mock.Anything).Return(cursorMock, nil)
 	db.On("Collection", mock.AnythingOfType("string")).Return(col)
@@ -129,6 +141,9 @@ func TestFindMany_Error_Unexpected_When_Decode(t *testing.T) {
 	assert.Nil(t, result, "should  be null")
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, err, exception.ErrInternalServer, "should be not internal server error")
+	cursorMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindMany_Error_Unexpected(t *testing.T) {
@@ -144,6 +159,8 @@ func TestFindMany_Error_Unexpected(t *testing.T) {
 	assert.Nil(t, result, "should  be null")
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, err, exception.ErrInternalServer, "should be not internal server error")
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindMany_Error_NotFound(t *testing.T) {
@@ -161,6 +178,9 @@ func TestFindMany_Error_NotFound(t *testing.T) {
 	assert.Nil(t, result)
 	assert.Equal(t, err, exception.ErrNotFound, "should be not found error")
 	assert.Error(t, err, "should be error")
+	cursorMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindOne_Success(t *testing.T) {
@@ -181,6 +201,9 @@ func TestFindOne_Success(t *testing.T) {
 	result, err := repo.FindOne(context.TODO(), date)
 	assert.NoError(t, err, "should be no error")
 	assert.Equal(t, result.Date, date, "should be the same")
+	singleResultMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindOne_Error_NotFound(t *testing.T) {
@@ -200,6 +223,9 @@ func TestFindOne_Error_NotFound(t *testing.T) {
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, exception.ErrNotFound, err)
 	assert.Equal(t, int64(0), result.Date, "should be 0")
+	singleResultMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func TestFindOne_Error_Unexpected(t *testing.T) {
@@ -219,4 +245,7 @@ func TestFindOne_Error_Unexpected(t *testing.T) {
 	assert.Error(t, err, "should be error")
 	assert.Equal(t, exception.ErrInternalServer, err)
 	assert.Equal(t, int64(0), result.Date, "should be 0")
+	singleResultMock.AssertExpectations(t)
+	col.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
